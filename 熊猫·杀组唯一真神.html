@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>熊猫预测·杀组唯一真神</title>
+<style>
+:root{
+--bg:#f7f9fc;
+--card:#ffffff;
+--text:#1f2937;
+--muted:#6b7280;
+--primary:#2563eb;
+--primary-weak:#e6efff;
+--border:#e5e7eb;
+--success:#16a34a;
+--danger:#ef4444;
+--warning:#f59e0b;
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:var(--bg);color:var(--text);
+font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+font-size: 13px;
+}
+.container{
+max-width:768px;
+margin:0 auto;padding:12px;
+}
+.card{
+background:var(--card);border:1px solid var(--border);border-radius:12px;
+box-shadow:0 6px 15px rgb(16 24 40 / 6%); padding:14px;
+margin-bottom: 10px;
+}
+.header{
+display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+}
+.logo{
+font-weight:700;font-size:16px;color:var(--primary);
+}
+.small{color:var(--muted);font-size:11px}
+.current{
+display:grid;grid-template-columns:1fr;gap:6px;text-align:center;
+}
+.current .period{font-weight:700;font-size:16px}
+.current .nums{font-size:18px;font-weight:700}
+.current .badge{
+display:inline-block;background:var(--primary-weak);color:var(--primary);
+padding:2px 8px;border-radius:999px;font-weight:700;margin-left:8px;
+font-size: 12px;
+}
+.current .opentime {
+font-size: 13px;
+color: var(--muted);
+}
+.countdown{
+margin-top:4px;font-size:13px;color:var(--muted)
+}
+.countdown.highlight{color:var(--danger);font-weight:700}
+.ai.card{margin-top:10px}
+.ai-title{font-weight:700;margin-bottom:6px; font-size: 15px;}
+.ai-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ai-pill{
+display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);
+font-weight:600;background:#f9fafb; font-size: 12px;
+}
+.ai-pill.success{background:#ecfdf5;border-color:#bbf7d0;color:#065f46}
+.ai-pill.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.ai-votes{color:var(--muted);font-size:11px;margin-top:6px;line-height:1.6}
+.error{color:#111;padding:10px 0; font-size: 12px;}
+.prediction-table {
+margin-top: 12px;
+width: 100%;
+border-collapse: collapse;
+font-size: 12px;
+}
+.prediction-table th {
+background: var(--primary-weak);
+color: var(--primary);
+padding: 5px 6px;
+text-align: center;
+font-weight: 600;
+border: 1px solid var(--border);
+}
+.prediction-table td {
+padding: 3px 5px;
+text-align: center;
+border: 1px solid var(--border);
+}
+.prediction-table .correct {
+color: var(--success);
+font-weight: 600;
+}
+.prediction-table .wrong {
+color: var(--danger);
+font-weight: 600;
+}
+.prediction-table .pending {
+color: var(--warning);
+font-weight: 600;
+}
+.table-title {
+font-weight: 700;
+margin: 16px 0 8px 0;
+font-size: 14px;
+}
+.stats {
+margin-top: 10px;
+padding: 6px;
+background: var(--primary-weak);
+border-radius: 6px;
+text-align: center;
+font-weight: 600;
+color: var(--primary);
+font-size: 12px;
+}
+.recommend-group {
+background: #f0fdf4;
+border: 1px solid #bbf7d0;
+color: #16a34a;
+padding: 6px 10px;
+border-radius: 6px;
+margin: 6px 0;
+font-weight: 600;
+font-size: 13px;
+}
+.recommend-group.waiting {
+background: #fff7ed;
+border: 1px solid #fed7aa;
+color: #9a3412;
+}
+.calculation-process {
+margin-top: 10px;
+border: 1px solid var(--border);
+border-radius: 6px;
+overflow: hidden;
+}
+.calculation-header {
+background: var(--primary-weak);
+color: var(--primary);
+padding: 6px 10px;
+cursor: pointer;
+font-weight: 600;
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 13px;
+}
+.calculation-content {
+padding: 10px;
+background: #f9fafb;
+font-size: 12px;
+line-height: 1.4;
+display: none;
+max-height: 250px;
+overflow-y: auto;
+}
+.calculation-content.show {
+display: block;
+}
+.calculation-step {
+margin-bottom: 6px;
+padding: 5px 6px;
+background: white;
+border-radius: 4px;
+border-left: 3px solid var(--primary);
+font-size: 12px;
+}
+.calculation-step:last-child {
+margin-bottom: 0;
+}
+.calculation-toggle {
+font-size: 12px;
+}
+.algorithm-selector {
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 6px;
+flex-wrap: wrap;
+}
+.algorithm-selector label {
+font-weight: 600;
+font-size: 13px;
+}
+.algorithm-selector select {
+padding: 5px 10px;
+border-radius: 6px;
+border: 1px solid var(--border);
+background: white;
+font-weight: 500;
+cursor: pointer;
+font-size: 12px;
+}
+.algorithm-selector select:focus {
+outline: none;
+border-color: var(--primary);
+}
+.algorithm-tag {
+display: inline-flex;
+align-items: center;
+gap: 4px;
+padding: 3px 8px;
+border-radius: 999px;
+background: #e6efff;
+color: var(--primary);
+font-weight: 600;
+font-size: 11px;
+margin-left: 6px;
+}
+.repeat-warning {
+background: #fef3c7;
+border: 1px solid #fbbf24;
+color: #92400e;
+padding: 6px 10px;
+border-radius: 6px;
+margin: 6px 0;
+font-weight: 600;
+font-size: 12px;
+}
+.hidden {
+display: none !important;
+}
+.status-tag {
+display: inline-block;
+padding: 1px 5px;
+border-radius: 4px;
+font-size: 11px;
+font-weight: 600;
+margin-left: 4px;
+}
+.status-tag.deng1 {
+background: #dcfce7;
+color: #166534;
+}
+.status-tag.deng2 {
+background: #fef3c7;
+color: #92400e;
+}
+.status-tag.cuowu {
+background: #fee2e2;
+color: #991b1b;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="error" class="error" style="display:none;"></div>
+
+  <div class="card">
+
+    <div class="header">
+
+      <div class="logo">熊猫TG@ZHX00001</div>
+
+      <div class="small">@ZHX00001</div>
+
+    </div>
+
+    <div class="current">
+
+      <div class="period">最新：<span id="cur-period">--</span> 期</div>
+
+      <div class="nums"><span id="cur-nums">--+--+--=--</span><span id="cur-tag" class="badge">-- --</span></div>
+
+      <div class="opentime">开奖时间：<span id="cur-time">-- --:--:--</span></div>
+
+      <div id="cd" class="countdown" style="display:none;">下一期：<span id="cd-txt">--分--秒</span></div>
+
+    </div>
+
+  </div>
+
+  <div id="ai" class="ai card" style="display:none;">
+
+    <div class="ai-title">算法预测<span id="algorithm-tag" class="algorithm-tag">算法1</span></div>
+
+    <div class="algorithm-selector">
+      <label for="algorithm-select">选择算法：</label>
+      <select id="algorithm-select" onchange="switchAlgorithm(this.value)">
+        <option value="algo1">算法1 · 五方位基础定义</option>
+        <option value="algo2">算法2 · 独家算法</option>
+      </select>
+    </div>
+
+    <div class="ai-line">
+      <span id="ai-nextperiod" class="ai-pill warn">下一期：--</span>
+    </div>
+
+    <div class="calculation-process">
+      <div class="calculation-header" onclick="toggleCalculation()">
+        <span>📐 计算过程</span>
+        <span class="calculation-toggle">▼</span>
+      </div>
+      <div id="calculation-content" class="calculation-content">
+        <div id="calculation-steps"></div>
+      </div>
+    </div>
+
+    <div id="recommend-group" class="recommend-group">推荐组合：--</div>
+
+    <div id="repeat-warning" class="repeat-warning hidden"></div>
+
+    <div class="ai-line">
+      <span id="ai-win-rate" class="ai-pill success">胜率：--%</span>
+    </div>
+
+  </div>
+
+  <div class="card" id="prediction-table-card" style="display:none;">
+
+    <div class="table-title">预测结果记录（最新50期）<span id="table-algorithm-tag" class="algorithm-tag">算法1</span></div>
+
+    <table class="prediction-table">
+      <thead>
+        <tr>
+          <th>期号</th>
+          <th>开奖</th>
+          <th>预测组合</th>
+          <th>对错结果</th>
+        </tr>
+      </thead>
+      <tbody id="prediction-tbody">
+      </tbody>
+    </table>
+
+    <div id="stats" class="stats"></div>
+
+  </div>
+
+</div>
+
+<script>
+// ================== 配置与公用函数 ==================
+const fieldConfig = {
+  periodField:'expect',
+  numbersField:'opencode',
+  timeField:'opentime',
+  separator:',',
+  apiUrl:'https://super.pc28998.com/history/JND28'
+};
+
+let data=[], page=1, pageSize=15, nextTime=null, timer=null, isFetching=false;
+let currentAlgorithm = 'algo1';
+
+// 两期机制状态管理
+let twoPhaseState = {
+  active: false,
+  firstCombo: '',
+  firstPeriod: '',
+  firstCorrect: null
+};
+
+const STORAGE_KEY = 'adnb_4y_twoPhase_state';
+const HISTORY_KEY = 'adnb_4y_history';
+
+function loadTwoPhaseState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      twoPhaseState = JSON.parse(saved);
+    }
+  } catch(e) {}
+}
+
+function saveTwoPhaseState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(twoPhaseState));
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadTwoPhaseState();
+  init();
+});
+
+function init(){
+  fetchData();
+}
+
+function setError(msg){
+  const el=document.getElementById('error');
+  el.textContent=msg; el.style.display='block';
+}
+
+function clearError(){document.getElementById('error').style.display='none';}
+
+async function fetchData(){
+  if(isFetching) return;
+  isFetching = true;
+  clearError();
+
+  try {
+    const lotteryData = await fetchLotteryData();
+    data = extractArray(lotteryData).slice(0,100).map(item => ({
+      ...item,
+      nums: parseNums(item[fieldConfig.numbersField])
+    }));
+
+    if(!data.length) throw new Error('没有获取到开奖数据');
+    renderCurrent();
+    setupCountdown();
+    renderAIPredict();
+    renderPredictionTable();
+    isFetching = false;
+  } catch(e){
+    console.error(e);
+    setError('获取数据出错：'+e.message);
+    isFetching = false;
+  }
+}
+
+async function fetchLotteryData() {
+  const response = await fetch('https://super.pc28998.com/history/JND28');
+  if (!response.ok) throw new Error('网络响应不正常');
+  const data = await response.json();
+  if (data.code !== 1 || !data.data) throw new Error('数据格式错误');
+  return data.data;
+}
+
+function extractArray(res){
+  if(Array.isArray(res)) return res;
+  if(res && typeof res==='object'){
+    const keys=['data','items','list','results','records'];
+    for(const k of keys){ if(Array.isArray(res[k])) return res[k]; }
+    for(const k in res){ if(Array.isArray(res[k])) return res[k]; }
+  }
+  return [];
+}
+
+function parseNums(opennum){
+  if(!opennum) return [];
+  return String(opennum).split(fieldConfig.separator).map(s=>s.trim()).filter(Boolean).map(n=>parseInt(n,10)||0);
+}
+
+function sum(nums){return nums.reduce((a,b)=>a+b,0);}
+
+function getTypeByNumber(n) {
+  if (n < 0 || n > 27) return '未知';
+  const isSmall = n <= 13;
+  const isOdd = n % 2 === 1;
+  if (isSmall) return isOdd ? '小单' : '小双';
+  else return isOdd ? '大单' : '大双';
+}
+
+function getYGroup(total) {
+  return total % 4;
+}
+
+function tagBySum(total){
+  const size = total>=14 ? '大' : '小';
+  const oe = (total%2===0) ? '双' : '单';
+  return { size, oe, combo: size+oe };
+}
+
+function fmtTime(s){
+  try{
+    if(typeof s==='string' && s.includes('-') && s.includes(':')){
+      const now=new Date();
+      const [md, hms] = s.split(' ');
+      const [M,D]=md.split('-').map(Number);
+      const [hh,mm,ss] = hms.split(':').map(Number);
+      const pad = n => String(n).padStart(2, '0');
+      return `${pad(M)}-${pad(D)} ${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+    }
+    const ts = Number(s);
+    if(!Number.isNaN(ts)){
+      const d = new Date(ts > 1e12 ? ts : ts*1000);
+      const pad=n=>String(n).padStart(2,'0');
+      return `${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+  }catch(e){}
+  return '-- --:--:--';
+}
+
+function renderCurrent(){
+  const latest=data[0];
+  const period= latest[fieldConfig.periodField] ?? '--';
+  const nums = latest.nums || [];
+  const s = sum(nums);
+  const t = tagBySum(s);
+  const numsTxt = (nums.length? nums.join('+')+'=' + s : '--+--+--=--');
+  const openTime = fmtTime(latest[fieldConfig.timeField]);
+
+  document.getElementById('cur-period').textContent = period;
+  document.getElementById('cur-nums').textContent = numsTxt;
+  document.getElementById('cur-tag').textContent = t.combo.replace(/([大小])([单双])/, '$1+$2');
+  document.getElementById('cur-time').textContent = openTime;
+}
+
+function setupCountdown(){
+  if(timer) clearInterval(timer);
+  const latest=data[0]; const ts = latest[fieldConfig.timeField];
+  let t=null;
+  try{
+    if(typeof ts==='string' && ts.includes('-') && ts.includes(':')){
+      const now=new Date();
+      const [md, hms] = ts.split(' ');
+      const [M,D] = md.split('-').map(Number);
+      const [hh,mm,ss] = hms.split(':').map(Number);
+      t = new Date(now.getFullYear(), M-1, D, hh, mm, ss);
+    }else{
+      const n = Number(ts);
+      t = new Date(n > 1e12 ? n : n*1000);
+    }
+  }catch(e){}
+  if(!t){ document.getElementById('cd').style.display='none'; return; }
+  nextTime = new Date(t.getTime() + 3*60*1000 + 30*1000);
+  document.getElementById('cd').style.display='block';
+  tick();
+  timer=setInterval(tick,1000);
+}
+
+function tick(){
+  const now=new Date();
+  const diff= nextTime - now;
+  const el=document.getElementById('cd'); const txt=document.getElementById('cd-txt');
+  if(diff<=0){
+    clearInterval(timer);
+    txt.textContent='正在开奖...';
+    el.classList.add('highlight');
+    if(!isFetching) {
+      setTimeout(fetchData, 1500);
+    }
+    return;
+  }
+  const m = Math.floor(diff/60000);
+  const s = Math.floor((diff%60000)/1000);
+  txt.textContent = `${m}分${String(s).padStart(2,'0')}秒`;
+  if(diff<30000) el.classList.add('highlight'); else el.classList.remove('highlight');
+}
+
+function switchAlgorithm(algorithmId) {
+  currentAlgorithm = algorithmId;
+  const tagMap = { algo1: '算法1·五方位基础定义', algo2: '算法2·独家算法' };
+  document.getElementById('algorithm-tag').textContent = tagMap[algorithmId] || algorithmId;
+  document.getElementById('table-algorithm-tag').textContent = tagMap[algorithmId] || algorithmId;
+
+  renderAIPredict();
+  renderPredictionTable();
+}
+
+function toggleCalculation() {
+  const content = document.getElementById('calculation-content');
+  const toggle = document.querySelector('.calculation-toggle');
+  if (content.classList.contains('show')) {
+    content.classList.remove('show');
+    toggle.textContent = '▼';
+  } else {
+    content.classList.add('show');
+    toggle.textContent = '▲';
+  }
+}
+
+// ================== 两期机制核心 ==================
+
+function checkPrediction(recommendGroups, actualSum) {
+  const actualCombo = tagBySum(actualSum).combo;
+  const normalized = recommendGroups.replace(/[+]/g, '');
+  return normalized.includes(actualCombo);
+}
+
+// 两期预测器：每期有两次机会
+function twoPhasePredict(dataSlice) {
+  if (dataSlice.length < 3) return null;
+
+  const latest = dataSlice[0];
+  const latestPeriod = latest[fieldConfig.periodField];
+  const latestSum = sum(latest.nums);
+
+  // 情况1：处于两期等待中，检查当前期是否是等待中的第二期
+  if (twoPhaseState.active && twoPhaseState.firstPeriod) {
+    const firstPeriodNum = parseInt(twoPhaseState.firstPeriod);
+    const currentPeriodNum = parseInt(latestPeriod);
+
+    // 检查当前期是否是等待中的第二期（期号连续）
+    if (currentPeriodNum === firstPeriodNum + 1) {
+      const savedCombo = twoPhaseState.firstCombo; // 先保存组合，再重置状态
+      const isCorrect = checkPrediction(savedCombo, latestSum);
+
+      // 记录历史结果
+      recordHistory(latestPeriod, latest.nums, latestSum, savedCombo, isCorrect ? '等一' : '等二');
+
+      if (isCorrect) {
+        // 第二期命中！重置状态，用最新数据重新计算下一期预测
+        twoPhaseState = { active: false, firstCombo: '', firstPeriod: '', firstCorrect: null };
+        saveTwoPhaseState();
+        // 重新计算新的预测组合（用当前最新数据）
+        const newResult = calculatePrediction(dataSlice);
+        return {
+          recommendGroups: newResult ? newResult.recommendGroups : '--',
+          isWaiting: false,
+          twoPhaseResult: '等一',
+          message: '第二期命中！已重置并重新计算',
+          calculationData: newResult ? newResult.calculationData : { note: '两期机制：第二期命中后重新计算' }
+        };
+      } else {
+        // 第二期也没中，真正的错误，重置后重新计算
+        twoPhaseState = { active: false, firstCombo: '', firstPeriod: '', firstCorrect: null };
+        saveTwoPhaseState();
+        const newResult = calculatePrediction(dataSlice);
+        return {
+          recommendGroups: newResult ? newResult.recommendGroups : '--',
+          isWaiting: false,
+          twoPhaseResult: '等二',
+          message: '两期均未命中，已重置并重新计算',
+          calculationData: newResult ? newResult.calculationData : { note: '两期机制：两期均未命中后重新计算' }
+        };
+      }
+    }
+  }
+
+  // 情况2：正常计算新预测
+  const result = calculatePrediction(dataSlice);
+  if (!result) return null;
+
+  const isCorrect = checkPrediction(result.recommendGroups, latestSum);
+
+  if (isCorrect) {
+    // 第一次就中了！记录等一，不进入两期等待，直接显示当前预测组合
+    recordHistory(latestPeriod, latest.nums, latestSum, result.recommendGroups, '等一');
+    return {
+      ...result,
+      isWaiting: false,
+      twoPhaseResult: '等一',
+      message: '第一期命中！'
+    };
+  } else {
+    // 第一次没中，进入两期等待状态，用同一组合继续预测下一期
+    twoPhaseState = {
+      active: true,
+      firstCombo: result.recommendGroups,
+      firstPeriod: latestPeriod,
+      firstCorrect: false
+    };
+    saveTwoPhaseState();
+    return {
+      ...result,
+      isWaiting: true,
+      twoPhaseResult: '待验证',
+      message: '第一期未命中，等待第二期验证...'
+    };
+  }
+}
+
+function recordHistory(period, nums, sum, combo, result) {
+  try {
+    let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const exists = history.find(h => h.period === period && h.algorithm === currentAlgorithm);
+    if (exists) return;
+
+    history.unshift({
+      period,
+      nums: nums.join('+'),
+      sum,
+      combo: tagBySum(sum).combo,
+      recommendGroups: combo,
+      result,
+      algorithm: currentAlgorithm,
+      timestamp: Date.now()
+    });
+    if (history.length > 100) history = history.slice(0, 100);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch(e) {}
+}
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+// ================== 算法核心 ==================
+
+function getDefaultComboByN(N) {
+  const type = getTypeByNumber(N);
+  switch(type) {
+    case '小单': return '小+单 小双大单';
+    case '小双': return '小+双 小单大双';
+    case '大单': return '大+单 小单大双';
+    case '大双': return '大+双 小双大单';
+    default: return '小单小双大单';
+  }
+}
+
+function algorithm1Predict(dataSlice) {
+  if (dataSlice.length < 3) return null;
+  const latest = dataSlice[0];
+  const prev = dataSlice[1];
+  const prev2 = dataSlice[2];
+
+  const L = sum(latest.nums);
+  const y = getYGroup(L);
+
+  let N;
+  let calculationDesc = '';
+
+  if (y === 0) {
+    const tail1 = sum(latest.nums) % 10;
+    const tail2 = sum(prev.nums) % 10;
+    const tail3 = sum(prev2.nums) % 10;
+    N = tail1 + tail2 + tail3;
+    calculationDesc = `L=${L}∈4y0，三期尾号 ${tail1}+${tail2}+${tail3}=${N}`;
+  } else if (y === 1) {
+    const A_prev = prev.nums[0];
+    const B_cur = latest.nums[1];
+    const C_cur = latest.nums[2];
+    N = A_prev + B_cur + C_cur;
+    calculationDesc = `L=${L}∈4y1，上期A ${A_prev} + 本期B ${B_cur} + 本期C ${C_cur} = ${N}`;
+  } else if (y === 2) {
+    const A_cur = latest.nums[0];
+    const B_prev = prev.nums[1];
+    const C_cur = latest.nums[2];
+    N = A_cur + B_prev + C_cur;
+    calculationDesc = `L=${L}∈4y2，本期A ${A_cur} + 上期B ${B_prev} + 本期C ${C_cur} = ${N}`;
+  } else {
+    const A_cur = latest.nums[0];
+    const B_cur = latest.nums[1];
+    const C_prev = prev.nums[2];
+    N = A_cur + B_cur + C_prev;
+    calculationDesc = `L=${L}∈4y3，本期A ${A_cur} + 本期B ${B_cur} + 上期C ${C_prev} = ${N}`;
+  }
+
+  let finalCombo = getDefaultComboByN(N);
+  let specialRule = '无';
+
+  if (N === 15) {
+    finalCombo = '小+双 小单大双';
+    specialRule = '规则1: N=15强制改为小+双 小单大双';
+  } else {
+    if (L === 13 || L === 14) {
+      if (N < 14) finalCombo = '小+双 小单大双';
+      else if (N > 13) finalCombo = '大+单 小单大双';
+      specialRule = `规则2: L=${L} N=${N} → ${finalCombo}`;
+    } else if (L === 23) {
+      finalCombo = '大+单 小单大双';
+      specialRule = '规则3: L=23 禁用大+双 小双大单 → 大+单 小单大双';
+    } else if (L === 24) {
+      finalCombo = '小+双 小单大双';
+      specialRule = '规则4: L=24 禁用小+单 小双大单 → 小+双 小单大双';
+    } else if (L === 5) {
+      finalCombo = '小+单 小双大单';
+      specialRule = '规则5: L=5 禁用小+双 小单大双 → 小+单 小双大单';
+    } else if (L === 4) {
+      finalCombo = '小+双 小单大双';
+      specialRule = '规则6: L=4 禁用小+单 小双大单 → 小+双 小单大双';
+    } else if (L === 12) {
+      finalCombo = '小+单 小双大单';
+      specialRule = '规则7: L=12 禁用小+双 小单大双 → 小+单 小双大单';
+    } else if (L === 15) {
+      finalCombo = '大+双 小双大单';
+      specialRule = '规则8: L=15 禁用大+单 小单大双 → 大+双 小双大单';
+    }
+  }
+
+  return {
+    recommendGroups: finalCombo,
+    winRate: '--%',
+    calculationData: {
+      L, y, N,
+      calc: calculationDesc,
+      defaultCombo: getDefaultComboByN(N),
+      finalCombo,
+      specialRule
+    }
+  };
+}
+
+function algorithm2Predict(dataSlice) {
+  if (dataSlice.length < 3) return null;
+  const latest = dataSlice[0];
+  const prev = dataSlice[1];
+  const prev2 = dataSlice[2];
+
+  const L = sum(latest.nums);
+  const y = getYGroup(L);
+
+  let N;
+  let calculationDesc = '';
+
+  if (y === 0) {
+    const tail1 = sum(latest.nums) % 10;
+    const tail2 = sum(prev.nums) % 10;
+    const tail3 = sum(prev2.nums) % 10;
+    N = tail1 + tail2 + tail3;
+    calculationDesc = `L=${L}∈4y0，三期尾号 ${tail1}+${tail2}+${tail3}=${N}`;
+  } else if (y === 1) {
+    const A_prev = prev.nums[0];
+    const B_cur = latest.nums[1];
+    const C_cur = latest.nums[2];
+    N = A_prev + B_cur + C_cur;
+    calculationDesc = `L=${L}∈4y1，上期A ${A_prev}+本期B ${B_cur}+本期C ${C_cur}=${N}`;
+  } else if (y === 2) {
+    const A_cur = latest.nums[0];
+    const B_prev = prev.nums[1];
+    const C_cur = latest.nums[2];
+    N = A_cur + B_prev + C_cur;
+    calculationDesc = `L=${L}∈4y2，本期A ${A_cur}+上期B ${B_prev}+本期C ${C_cur}=${N}`;
+  } else {
+    const A_cur = latest.nums[0];
+    const B_cur = latest.nums[1];
+    const C_prev = prev.nums[2];
+    N = A_cur + B_cur + C_prev;
+    calculationDesc = `L=${L}∈4y3，本期A ${A_cur}+本期B ${B_cur}+上期C ${C_prev}=${N}`;
+  }
+
+  const finalCombo = getDefaultComboByN(N);
+
+  return {
+    recommendGroups: finalCombo,
+    winRate: '--%',
+    calculationData: {
+      L, y, N,
+      calc: calculationDesc,
+      defaultCombo: finalCombo,
+      finalCombo,
+      specialRule: '无特殊规则'
+    }
+  };
+}
+
+function calculatePrediction(data) {
+  if (!data || data.length < 3) return null;
+  if (currentAlgorithm === 'algo1') {
+    return algorithm1Predict(data);
+  } else {
+    return algorithm2Predict(data);
+  }
+}
+
+function renderCalculationProcess(latest, prev, prev2, result) {
+  const stepsEl = document.getElementById('calculation-steps');
+  if (!stepsEl || !result) return;
+
+  const d = result.calculationData;
+  let stepsHTML = `
+    <div class="calculation-step">📌 最新和值 L = ${d.L} (${tagBySum(d.L).combo}) ，y = ${d.y} (4y${d.y})</div>
+    <div class="calculation-step">🔢 计算 N：${d.calc}</div>
+    <div class="calculation-step">📊 N = ${d.N} → ${getTypeByNumber(d.N)} (默认组合: ${d.defaultCombo})</div>
+  `;
+  if (d.specialRule !== '无' && d.specialRule !== '无特殊规则') {
+    stepsHTML += `<div class="calculation-step">⚠️ 应用特殊规则: ${d.specialRule}</div>`;
+  }
+  stepsHTML += `<div class="calculation-step">✅ 最终推荐组合: ${d.finalCombo}</div>`;
+
+  stepsEl.innerHTML = stepsHTML;
+}
+
+function renderAIPredict(){
+  try{
+    if(!data.length){ document.getElementById('ai').style.display='none'; return; }
+
+    if (data.length < 3) {
+      document.getElementById('recommend-group').textContent = `推荐组合：数据不足(需3期)`;
+      document.getElementById('ai').style.display='block';
+      return;
+    }
+
+    const result = twoPhasePredict(data);
+
+    if (result) {
+      const recommendEl = document.getElementById('recommend-group');
+      // 始终显示实际的预测组合，不显示"等待中"或"等待重新计算"
+      const displayCombo = result.recommendGroups || '--';
+
+      if (result.isWaiting) {
+        // 处于等待第二期状态：显示当前预测组合 + 待验证标签
+        recommendEl.className = 'recommend-group waiting';
+        recommendEl.innerHTML = `推荐组合：${displayCombo} <span class="status-tag deng2">待验证(等二)</span>`;
+      } else if (result.twoPhaseResult === '等一') {
+        // 命中了（第一期或第二期）：显示新计算的组合 + 等一标签
+        recommendEl.className = 'recommend-group';
+        recommendEl.innerHTML = `推荐组合：${displayCombo} <span class="status-tag deng1">等一</span>`;
+      } else if (result.twoPhaseResult === '等二') {
+        // 两期都没中：显示新重新计算的组合 + 等二标签
+        recommendEl.className = 'recommend-group';
+        recommendEl.innerHTML = `推荐组合：${displayCombo} <span class="status-tag deng2">等二</span>`;
+      } else {
+        // 正常状态
+        recommendEl.className = 'recommend-group';
+        recommendEl.textContent = `推荐组合：${displayCombo}`;
+      }
+
+      if (data.length > 2 && result.calculationData && !result.calculationData.note) {
+        renderCalculationProcess(data[0], data[1], data[2], result);
+      } else if (result.calculationData && result.calculationData.note) {
+        document.getElementById('calculation-steps').innerHTML =
+          `<div class="calculation-step">${result.calculationData.note}</div>`;
+      }
+    } else {
+      document.getElementById('recommend-group').textContent = `推荐组合：计算失败`;
+    }
+
+    const nextPeriod = (()=>{
+      const cur = data[0][fieldConfig.periodField];
+      const n = Number(cur);
+      if(Number.isFinite(n)) return String(n+1);
+      const m = String(cur||'').match(/(\d+)(\D*\d+)*/);
+      return m ? String(Number(m[1])+1) : '--';
+    })();
+    document.getElementById('ai-nextperiod').textContent = `下一期：${nextPeriod}`;
+    document.getElementById('ai').style.display='block';
+  }catch(e){
+    console.error('预测计算错误:', e);
+  }
+}
+
+function getPredictionResult(recommendGroups, actualSum) {
+  const actualCombo = tagBySum(actualSum).combo;
+  const normalized = recommendGroups.replace(/[+]/g, '');
+  const isCorrect = normalized.includes(actualCombo);
+  return {
+    type: isCorrect ? 'correct' : 'wrong',
+    text: isCorrect ? '正确' : '错误'
+  };
+}
+
+function renderPredictionTable() {
+  if (data.length < 4) {
+    document.getElementById('prediction-table-card').style.display = 'none';
+    return;
+  }
+
+  const tbody = document.getElementById('prediction-tbody');
+  tbody.innerHTML = '';
+
+  let correctCount = 0;
+  let totalCount = 0;
+  let deng1Count = 0;
+  let deng2Count = 0;
+
+  const historyRecords = [];
+  let tempTwoPhaseState = { active: false, firstCombo: '', firstPeriod: '', firstCorrect: null };
+
+  const maxBacktest = Math.min(data.length - 3, 50);
+
+  for (let i = maxBacktest - 1; i >= 0; i--) {
+    const historyData = data.slice(i+1, i+4);
+    if (historyData.length < 3) continue;
+
+    const currentPeriod = data[i];
+    const currentPeriodNum = currentPeriod[fieldConfig.periodField];
+    const currentSum = sum(currentPeriod.nums || []);
+
+    let result;
+    let twoPhaseResult = '';
+    let displayCombo = ''; // 用于存储实际显示的预测组合
+
+    if (tempTwoPhaseState.active && tempTwoPhaseState.firstPeriod) {
+      const firstPeriodNum = parseInt(tempTwoPhaseState.firstPeriod);
+      const curPeriodNum = parseInt(currentPeriodNum);
+
+      if (curPeriodNum === firstPeriodNum + 1) {
+        // 这是第二期验证，先保存组合再重置
+        displayCombo = tempTwoPhaseState.firstCombo;
+        const isCorrect = checkPrediction(displayCombo, currentSum);
+        if (isCorrect) {
+          twoPhaseResult = '等一';
+          tempTwoPhaseState = { active: false, firstCombo: '', firstPeriod: '', firstCorrect: null };
+        } else {
+          twoPhaseResult = '等二';
+          tempTwoPhaseState = { active: false, firstCombo: '', firstPeriod: '', firstCorrect: null };
+        }
+        result = { recommendGroups: displayCombo };
+      } else {
+        // 期号不连续，重置状态重新计算
+        tempTwoPhaseState = { active: false, firstCombo: '', firstPeriod: '', firstCorrect: null };
+        result = calculatePrediction(historyData);
+        if (!result) continue;
+
+        const isCorrect = checkPrediction(result.recommendGroups, currentSum);
+        if (isCorrect) {
+          twoPhaseResult = '等一';
+        } else {
+          tempTwoPhaseState = {
+            active: true,
+            firstCombo: result.recommendGroups,
+            firstPeriod: currentPeriodNum,
+            firstCorrect: false
+          };
+          twoPhaseResult = '待验证';
+        }
+      }
+    } else {
+      // 正常计算
+      result = calculatePrediction(historyData);
+      if (!result) continue;
+
+      const isCorrect = checkPrediction(result.recommendGroups, currentSum);
+      if (isCorrect) {
+        twoPhaseResult = '等一';
+      } else {
+        tempTwoPhaseState = {
+          active: true,
+          firstCombo: result.recommendGroups,
+          firstPeriod: currentPeriodNum,
+          firstCorrect: false
+        };
+        twoPhaseResult = '待验证';
+      }
+    }
+
+    // 只记录有确定结果的（等一或等二）
+    if (twoPhaseResult === '等一' || twoPhaseResult === '等二') {
+      totalCount++;
+      if (twoPhaseResult === '等一') {
+        correctCount++;
+        deng1Count++;
+      } else {
+        deng2Count++;
+      }
+
+      const actualNums = currentPeriod.nums || [];
+      const actualSum = sum(actualNums);
+
+      historyRecords.unshift({
+        period: currentPeriodNum,
+        resultText: actualNums.length ? `${actualNums.join('+')}=${actualSum} ${tagBySum(actualSum).combo}` : '--',
+        recommendGroups: result.recommendGroups,
+        twoPhaseResult: twoPhaseResult,
+        isCorrect: twoPhaseResult === '等一'
+      });
+    }
+  }
+
+  // 渲染表格（最多显示50条）
+  const displayRecords = historyRecords.slice(-50);
+  displayRecords.forEach(record => {
+    const row = document.createElement('tr');
+
+    const periodCell = document.createElement('td');
+    periodCell.textContent = record.period || '--';
+
+    const resultCell = document.createElement('td');
+    resultCell.textContent = record.resultText;
+
+    const recommendCell = document.createElement('td');
+    recommendCell.textContent = record.recommendGroups || '--';
+
+    const correctCell = document.createElement('td');
+    if (record.twoPhaseResult === '等一') {
+      correctCell.innerHTML = '正确 <span class="status-tag deng1">等一</span>';
+      correctCell.className = 'correct';
+    } else if (record.twoPhaseResult === '等二') {
+      correctCell.innerHTML = '错误 <span class="status-tag deng2">等二</span>';
+      correctCell.className = 'wrong';
+    } else {
+      correctCell.textContent = record.twoPhaseResult;
+      correctCell.className = 'pending';
+    }
+
+    row.appendChild(periodCell);
+    row.appendChild(resultCell);
+    row.appendChild(recommendCell);
+    row.appendChild(correctCell);
+
+    tbody.appendChild(row);
+  });
+
+  if (totalCount > 0) {
+    const accuracy = ((correctCount / totalCount) * 100).toFixed(1);
+    document.getElementById('stats').textContent =
+      `当前算法准确率：${correctCount}/${totalCount} = ${accuracy}% | 等一${deng1Count}期 | 等二${deng2Count}期`;
+    document.getElementById('ai-win-rate').textContent = `胜率：${accuracy}%`;
+  } else {
+    document.getElementById('stats').textContent = `暂无足够历史回测`;
+  }
+
+  document.getElementById('prediction-table-card').style.display = 'block';
+}
+</script>
+</body>
+</html>
